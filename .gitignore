@@ -1,0 +1,15 @@
+node_modules
+dist
+.env
+.DS_Store
+Thumbs.db
+installer/target
+installer/**/*.pdb
+installer/**/*.user
+installer/.cargo
+installer/Cargo.lock
+src/**/*.log
+.vscode
+installer/Cargo.lock
+*.lock
+/installer/src-tauri/target

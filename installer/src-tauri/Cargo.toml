@@ -1,0 +1,25 @@
+[package]
+name = "battly_installer"
+version = "1.0.0"
+description = "Battly Launcher Installer"
+authors = ["TecnoBros"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "1", features = [] }
+
+[dependencies]
+tauri = { version = "=1.6.0", features = ["shell-open", "dialog-all"] }
+tauri-plugin-aptabase = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "=0.11.22", features = ["blocking", "json"] }
+zip = { version = "=0.6.6", default-features = false, features = ["deflate"] }
+globset = "=0.4.14"
+dirs = "5.0"
+winreg = "0.51"
+# Removing image dependency as we use HTML for UI now
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem
+custom-protocol = ["tauri/custom-protocol"]

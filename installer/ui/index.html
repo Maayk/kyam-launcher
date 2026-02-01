@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battly Launcher Setup</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="window-controls">
+        <div class="drag-region"></div>
+        <button id="close-btn" class="control-btn">&times;</button>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo-area">
+                <img src="logo.png" alt="Battly Logo" class="logo">
+                <h1>Battly Launcher</h1>
+                <p>Version 2.0.0</p>
+            </div>
+            <div class="steps">
+                <div class="step active" id="step-welcome">
+                    <div class="step-icon">1</div>
+                    <span id="step-welcome-text">Bienvenido</span>
+                </div>
+                <div class="step" id="step-install">
+                    <div class="step-icon">2</div>
+                    <span id="step-install-text">Instalación</span>
+                </div>
+                <div class="step" id="step-finish">
+                    <div class="step-icon">3</div>
+                    <span id="step-finish-text">Finalizar</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <!-- Screen 1: Welcome -->
+            <div id="screen-welcome" class="screen active">
+                <h2 id="title-welcome">Instalar Battly Launcher</h2>
+                <p class="description" id="desc-welcome">Bienvenido al asistente de instalación de Battly Launcher para
+                    Hytale. Este
+                    programa instalará la última versión en tu sistema.</p>
+
+                <div class="options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-opera" checked>
+                        <span class="checkmark"></span>
+                        <div class="label-text">
+                            <strong id="text-opera-main">Instalar Opera Browser</strong>
+                            <span class="subtext" id="text-opera-sub">Navegador recomendado para gamers
+                                (Opcional)</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" id="btn-install">Instalar</button>
+                </div>
+            </div>
+
+            <!-- Screen 2: Progress -->
+            <div id="screen-progress" class="screen">
+                <h2 id="title-installing">Instalando...</h2>
+                <p id="status-text">Preparando...</p>
+
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+
+            <!-- Screen 3: Finish -->
+            <div id="screen-finish" class="screen">
+                <div class="success-icon">✓</div>
+                <h2 id="title-finished">¡Instalación Completada!</h2>
+                <p id="desc-finished">Battly Launcher se ha instalado correctamente en tu ordenador.</p>
+
+                <div class="actions">
+                    <button class="btn btn-primary" id="btn-launch">Jugar Ahora</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

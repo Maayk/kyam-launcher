@@ -1,0 +1,14 @@
+{
+  "launcher": {
+    "version": "1.0.0",
+    "url": "https://github.com/1ly4s0/Battly4Hytale/releases/latest/download/BattlyLauncher-win.zip",
+    "notes": "Lanzamiento inicial - Bienvenido a Battly Launcher",
+    "mandatory": false
+  },
+  "hytale": {
+    "version": "18.01.2025",
+    "url": "https://cdn.battlylauncher.com/hytale/18.01.2025/Hytale.zip",
+    "notes": "Initial version of Hytale for Battly Launcher users.",
+    "mandatory": true
+  }
+}
