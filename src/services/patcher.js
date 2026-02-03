@@ -18,7 +18,10 @@ const CONFIG = {
     fallbackPatch: '5.pwr',
     oldDiscord: '.gg/hytale',
     newDiscord: '.gg/98SsAX7Ks9',
-    localConfigPath: path.join(app.getAppPath(), 'config.json'),
+    // Fix: Check resourcesPath for production build (extraResources)
+    localConfigPath: fs.existsSync(path.join(app.getAppPath(), 'config.json'))
+        ? path.join(app.getAppPath(), 'config.json')
+        : path.join(process.resourcesPath, 'config.json'),
     localCdnDir: path.join(app.getAppPath(), 'cdn'),
     extractScanMaxDepth: 6,
     extractScanMaxEntries: 200
@@ -379,6 +382,11 @@ async function applyBinaryMods(clientPath, event) {
 async function updateGameFiles(gameDir, event, channel) {
     const installedFromLocal = await tryInstallFromLocalArchive(gameDir, event, channel);
     if (installedFromLocal) return;
+
+    // Se falhar a instalação do arquivo local/custom para Beta, NÃO deve fazer fallback para o patch oficial (que baixaria a versão Legacy)
+    if (channel !== 'latest') {
+        throw new Error(`Failed to install custom version for channel '${channel}'. Verifique o arquivo de configuração ou a URL.`);
+    }
 
     const patcherBin = await ensureTools(event);
 

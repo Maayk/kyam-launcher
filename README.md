@@ -71,7 +71,7 @@ universal-analytics
 
 ## Segurança e Arquitetura
 
-Este fork implementa correções críticas de segurança baseadas nas vulnerabilidades reportadas em [Issue #1](https://github.com/1ly4s0/Battly4Hytale/issues/1), adotando um modelo de segurança "Sandboxed" moderno.
+Este fork implementa correções críticas de segurança baseadas nas vulnerabilidades, adotando um modelo de segurança "Sandboxed" moderno.
 
 ### Proteções Implementadas
 
