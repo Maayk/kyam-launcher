@@ -42,7 +42,6 @@
     "node-localstorage": "^3.0.5",
     "node-stream-zip": "^1.15.0",
     "semver": "^7.7.3",
-    "systeminformation": "^5.30.6",
     "uuid": "^13.0.0"
   },
   "repository": {

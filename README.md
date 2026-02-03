@@ -4,7 +4,7 @@ Fork modificado do [Battly4Hytale](https://github.com/1ly4s0/Battly4Hytale) com 
 
 ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-blue) ![Plataforma](https://img.shields.io/badge/Plataforma-Windows-lightgrey) ![Node](https://img.shields.io/badge/Node-20+-green)
 
-![Preview do Launcher](https://i.ibb.co/Z6RLbpm3/image.png)
+![Preview do Launcher](https://i.ibb.co/VYxmNfBb/image.png)
 
 ---
 
@@ -58,6 +58,14 @@ discord-rpc
 universal-analytics
 ```
 
+### Refatoração Recente
+
+| Mudança | Descrição |
+|---------|-----------|
+| **Modularização do Renderer** | `renderer.js` dividido em módulos (`renderer/`) para melhor manutenibilidade |
+| **Unificação de paths** | Configurações agora usam `Kyamtale` com migração automática |
+| **API key centralizada** | Chave CurseForge movida para `config.json` |
+
 ---
 
 ## Requisitos
@@ -88,7 +96,12 @@ Scripts:
 ```
 src/
 ├── main.js               # Processo Main (IPC, janelas)
-├── renderer.js           # UI / DOM
+├── renderer.js           # UI principal (~1070 linhas)
+├── renderer/             # Módulos da UI
+│   ├── utils.js          # sanitizeUsername, shakeElement
+│   ├── i18n.js           # Sistema de traduções
+│   ├── dialog.js         # Diálogos customizados
+│   └── news.js           # Carrossel de notícias
 ├── analytics.js          # Stubs vazios (sem telemetria)
 ├── index.html / style.css / splash.html
 ├── services/

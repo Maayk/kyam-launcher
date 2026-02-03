@@ -4,9 +4,14 @@ const axios = require('axios');
 const { app, BrowserWindow } = require('electron');
 const { downloadFile } = require('./utils');
 
-const CF_API_KEY = '$2a$10$S7nVFhQKpxteK4Fwf9yoxejmI.NjJiE53Qh4IeaDbIu/./oTM/MKa';
-const CF_API_URL = 'https://api.curseforge.com/v1';
-const GAME_ID = 70216;
+// Carrega configurações da API do config.json
+const configPath = path.join(app.getAppPath(), 'config.json');
+const config = fs.readJsonSync(configPath);
+
+const CF_API_KEY = config.api?.curseforge_key || '';
+const CF_API_URL = config.api?.curseforge_url || 'https://api.curseforge.com/v1';
+const GAME_ID = config.api?.hytale_game_id || 70216;
+
 
 function registerModHandlers(ipcMain) {
     const modsDir = path.join(app.getPath('appData'), 'Kyamtale', 'UserData', 'Mods');

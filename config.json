@@ -5,6 +5,11 @@
     "notes": "Lanzamiento inicial - Bienvenido a Battly Launcher",
     "mandatory": false
   },
+  "api": {
+    "curseforge_key": "$2a$10$S7nVFhQKpxteK4Fwf9yoxejmI.NjJiE53Qh4IeaDbIu/./oTM/MKa",
+    "curseforge_url": "https://api.curseforge.com/v1",
+    "hytale_game_id": 70216
+  },
   "hytale": {
     "latest": {
       "version": "17.01.2026",

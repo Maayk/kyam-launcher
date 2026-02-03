@@ -380,42 +380,34 @@
     </div>
 
     <div id="modModal" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content mod-detail-modal">
             <button class="modal-close-btn" id="closeModalBtn">&times;</button>
-            <div class="modal-body">
-                <div class="modal-header-row">
-                    <img id="modalModImage" src="" alt="Mod Logo" class="modal-mod-logo">
-                    <div class="modal-header-text">
-                        <h2 id="modalModName">Mod Name</h2>
-                        <p class="modal-mod-author" id="modalModAuthor">by Author</p>
-                        <div class="modal-mod-meta">
-                            <span class="mod-pill" id="modalModVersion">v1.0.0</span>
-                            <span class="mod-pill"><span data-i18n="modal_updated">Atualizado</span>: <span
-                                    id="modalModDate">12/12/2024</span></span>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="modal-stats-row">
-                    <div class="stat-box">
-                        <i class="fas fa-download"></i>
-                        <span id="modalModDownloads">10k</span>
-                        <div class="stat-box">
-                            <i class="fas fa-download"></i>
-                            <span id="modalModDownloads">10k</span>
-                            <span class="stat-label" data-i18n="modal_downloads">Downloads</span>
-                        </div>
-                    </div>
-                    <div class="modal-description-area">
-                        <h3 data-i18n="modal_about">Sobre este mod</h3>
-                        <p id="modalModDescription">...</p>
+            <!-- Header compacto -->
+            <div class="mod-detail-header">
+                <img id="modalModImage" src="" alt="Mod Logo" class="mod-detail-logo">
+                <div class="mod-detail-info">
+                    <h2 id="modalModName">Mod Name</h2>
+                    <p class="mod-detail-author" id="modalModAuthor">by Author</p>
+                    <div class="mod-detail-badges">
+                        <span class="mod-badge" id="modalModVersion">v1.0.0</span>
+                        <span class="mod-badge downloads"><i class="fas fa-download"></i> <span
+                                id="modalModDownloads">10k</span></span>
+                        <span class="mod-badge" id="modalModDate">12/12/2024</span>
                     </div>
                 </div>
+            </div>
 
-                <div class="modal-footer-actions">
-                    <button id="modalInstallBtn" class="action-btn primary-btn large-btn"
-                        data-i18n="modal_install">Instalar Agora</button>
-                </div>
+            <!-- Descrição com scroll -->
+            <div class="mod-detail-description">
+                <h4 data-i18n="modal_about">About this mod</h4>
+                <div class="mod-detail-content" id="modalModDescription">...</div>
+            </div>
+
+            <!-- Footer com ação -->
+            <div class="mod-detail-footer">
+                <button id="modalInstallBtn" class="action-btn primary-btn" data-i18n="modal_install">Install
+                    Now</button>
             </div>
         </div>
     </div>

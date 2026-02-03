@@ -2,183 +2,17 @@ const { ipcRenderer } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-let currentTranslations = {};
-const AVAILABLE_LANGS = ['en', 'es', 'pt', 'de', 'fr', 'zh', 'ru', 'ja'];
-const defaultLang = 'pt';
+// Módulos extraídos
+const { ONBOARDING_CONFIG, sanitizeUsername, shakeElement } = require('./renderer/utils');
+const { getSavedLang, loadLocale, t, applyTranslations, AVAILABLE_LANGS, defaultLang } = require('./renderer/i18n');
+const { showCustomDialog, customAsk } = require('./renderer/dialog');
+const { loadNews } = require('./renderer/news');
 
-const getSavedLang = () => {
-    const saved = localStorage.getItem('battly_lang');
-    return AVAILABLE_LANGS.includes(saved) ? saved : defaultLang;
-};
-
+// Configurações
 const SETTINGS_CONFIG = {
     defaultGameChannel: 'latest',
     gameChannels: ['latest', 'beta']
 };
-
-const ONBOARDING_CONFIG = {
-    enabled: false,
-    usernameMaxLength: 24
-};
-
-let newsData = [];
-let currentHeroIndex = 0;
-
-async function loadNews() {
-    const heroImage = document.getElementById('heroImage');
-    const heroTitle = document.getElementById('heroTitle');
-    const heroDescription = document.getElementById('heroDescription');
-    const heroSection = document.getElementById('heroSection');
-    const newsCarousel = document.getElementById('newsCarousel');
-    const navDots = document.getElementById('navDots');
-    const heroReadMore = document.getElementById('heroReadMore');
-
-    try {
-        newsData = await ipcRenderer.invoke('get-news');
-
-        if (!newsData || newsData.length === 0) {
-            heroTitle.textContent = 'Sem notícias disponíveis';
-            newsCarousel.innerHTML = '<p style="color: rgba(255,255,255,0.4);">Nenhuma notícia encontrada.</p>';
-            return;
-        }
-
-        updateHero(0);
-
-        newsCarousel.innerHTML = '';
-        newsData.forEach((item, idx) => {
-            const card = document.createElement('div');
-            card.className = 'news-card' + (idx === 0 ? ' active' : '');
-            card.dataset.index = idx;
-
-            const bgImage = item.image || 'https://hytale.com/static/images/media/screenshots/1.jpg';
-
-            card.innerHTML = `
-                <div class="news-card-image" style="background-image: url('${bgImage}')"></div>
-                <div class="news-card-content">
-                    <p class="news-card-title">${item.title}</p>
-                </div>
-            `;
-
-            card.addEventListener('click', () => {
-                updateHero(idx);
-                document.querySelectorAll('.news-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                updateNavDots(idx);
-            });
-
-            newsCarousel.appendChild(card);
-        });
-
-        if (navDots) {
-            navDots.innerHTML = '';
-            newsData.forEach((_, idx) => {
-                const dot = document.createElement('div');
-                dot.className = 'nav-dot' + (idx === 0 ? ' active' : '');
-                dot.addEventListener('click', () => {
-                    updateHero(idx);
-                    document.querySelectorAll('.news-card').forEach(c => c.classList.remove('active'));
-                    const cards = document.querySelectorAll('.news-card');
-                    if (cards[idx]) cards[idx].classList.add('active');
-                    updateNavDots(idx);
-                });
-                navDots.appendChild(dot);
-            });
-        }
-
-        if (heroReadMore) {
-            heroReadMore.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (newsData[currentHeroIndex]?.link) {
-                    require('electron').shell.openExternal(newsData[currentHeroIndex].link);
-                }
-            });
-        }
-
-        // Auto-slide a cada 6 segundos
-        if (newsData.length > 1) {
-            setInterval(() => {
-                const nextIndex = (currentHeroIndex + 1) % newsData.length;
-                updateHero(nextIndex);
-                document.querySelectorAll('.news-card').forEach(c => c.classList.remove('active'));
-                const cards = document.querySelectorAll('.news-card');
-                if (cards[nextIndex]) cards[nextIndex].classList.add('active');
-                updateNavDots(nextIndex);
-            }, 6000);
-        }
-
-    } catch (e) {
-        console.error("News Load Error:", e);
-        heroTitle.textContent = 'Erro ao carregar notícias';
-        newsCarousel.innerHTML = '<p style="color: #ff4444;">Falha ao carregar.</p>';
-    }
-}
-
-function updateNavDots(index) {
-    const dots = document.querySelectorAll('.nav-dot');
-    dots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === index);
-    });
-}
-
-function updateHero(index) {
-    currentHeroIndex = index;
-    const item = newsData[index];
-    if (!item) return;
-
-    const heroTitle = document.getElementById('heroTitle');
-    const heroDescription = document.getElementById('heroDescription');
-
-    // Background fixo já definido no CSS, apenas atualiza título e descrição
-    heroTitle.textContent = item.title;
-    heroDescription.textContent = item.summary || 'Sua aventura começa aqui';
-}
-
-async function loadLocale(lang) {
-    try {
-        const localePath = path.join(__dirname, 'locales', `${lang}.json`);
-        console.log(`Loading locale from: ${localePath}`);
-        if (fs.existsSync(localePath)) {
-            const data = fs.readFileSync(localePath, 'utf8');
-            currentTranslations = JSON.parse(data);
-            localStorage.setItem('battly_lang', lang);
-            applyTranslations();
-        } else {
-            console.error(`Locale ${lang} not found at ${localePath}`);
-        }
-    } catch (e) {
-        console.error('Error loading locale:', e);
-    }
-}
-
-function t(key) {
-    return currentTranslations[key] || key;
-}
-
-function applyTranslations() {
-    const elements = document.querySelectorAll('[data-i18n]');
-    elements.forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (currentTranslations[key]) {
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                el.placeholder = currentTranslations[key];
-            } else {
-                el.textContent = currentTranslations[key];
-            }
-        }
-    });
-
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (currentTranslations[key]) el.placeholder = currentTranslations[key];
-    });
-
-    if (playBtn && !playBtn.disabled) playBtn.innerHTML = t('play_btn');
-}
-
-function sanitizeUsername(value) {
-    if (typeof value !== 'string') return '';
-    return value.trim().replace(/\s+/g, ' ').slice(0, ONBOARDING_CONFIG.usernameMaxLength);
-}
 
 document.getElementById('minBtn').addEventListener('click', () => {
     ipcRenderer.send('minimize-window');
@@ -188,22 +22,11 @@ document.getElementById('closeBtn').addEventListener('click', () => {
     ipcRenderer.send('close-window');
 });
 
-
 const settingsBtn = document.getElementById('settingsBtn');
 const settingsModal = document.getElementById('settingsModal');
 const closeSettingsBtn = document.getElementById('closeSettingsBtn');
 const hideLauncherCheck = document.getElementById('hideLauncherCheck');
 
-if (settingsBtn) {
-    settingsBtn.addEventListener('click', async () => {
-    });
-}
-
-if (closeSettingsBtn) {
-}
-
-if (hideLauncherCheck) {
-}
 hideLauncherCheck.addEventListener('change', async (e) => {
     await ipcRenderer.invoke('save-settings', { hideLauncher: e.target.checked });
 });
@@ -237,8 +60,11 @@ const installedList = document.getElementById('installedList');
 const modSearchInput = document.getElementById('modSearchInput');
 const searchModsBtn = document.getElementById('searchModsBtn');
 
-loadLocale(getSavedLang());
-loadNews();
+// Inicialização do locale precisa ser síncrona para garantir traduções corretas
+(async () => {
+    await loadLocale(getSavedLang());
+    loadNews();
+})();
 
 const langSelect = document.getElementById('langSelect');
 if (langSelect) {
@@ -901,14 +727,14 @@ function openModModal(mod) {
         const color = "00000".substring(0, 6 - c.length) + c;
 
         const placeholder = document.createElement('div');
-        placeholder.className = 'modal-mod-logo modal-fallback';
+        placeholder.className = 'mod-detail-logo modal-fallback';
         placeholder.style.background = `#${color}`;
         placeholder.style.display = 'flex';
         placeholder.style.alignItems = 'center';
         placeholder.style.justifyContent = 'center';
         placeholder.style.color = '#fff';
         placeholder.style.fontWeight = 'bold';
-        placeholder.style.fontSize = '32px';
+        placeholder.style.fontSize = '24px';
         placeholder.innerText = mod.name.substring(0, 2).toUpperCase();
 
         this.parentElement.insertBefore(placeholder, this);
@@ -916,10 +742,10 @@ function openModModal(mod) {
     modalElements.name.textContent = mod.name;
     modalElements.author.textContent = `${t('modal_author')} ${mod.author || 'Unknown'}`;
     modalElements.version.textContent = mod.version || 'v1.0';
-    modalElements.date.textContent = mod.lastUpdated ? `${t('modal_updated')}: ${mod.lastUpdated}` : 'Recent';
+    modalElements.date.textContent = mod.lastUpdated || 'Recent';
     modalElements.downloads.textContent = mod.downloads ? mod.downloads.toLocaleString() : '0';
 
-    modalElements.description.innerHTML = '<p style="color: #888;">...</p>';
+    modalElements.description.innerHTML = '<p style="color: #666;">...</p>';
 
     ipcRenderer.invoke('get-mod-description', mod.id).then(result => {
         if (currentModalMod && currentModalMod.id === mod.id) {
@@ -1118,18 +944,6 @@ function resetPlayBtn() {
     playBtn.innerHTML = `${t('play_btn')} `;
 }
 
-function shakeElement(element) {
-    element.animate([
-        { transform: 'translateX(0)' },
-        { transform: 'translateX(-10px)' },
-        { transform: 'translateX(10px)' },
-        { transform: 'translateX(-10px)' },
-        { transform: 'translateX(0)' }
-    ], {
-        duration: 400
-    });
-}
-
 const onboardingView = document.getElementById('onboardingView');
 const startBtn = document.getElementById('startBtn');
 const termsCheck = document.getElementById('termsCheck');
@@ -1259,65 +1073,5 @@ if (onboardingView) {
 
 initOnboarding();
 
-const customDialog = document.getElementById('customDialog');
-const dialogTitle = document.getElementById('dialogTitle');
-const dialogMessage = document.getElementById('dialogMessage');
-const dialogConfirmBtn = document.getElementById('dialogConfirmBtn');
-const dialogCancelBtn = document.getElementById('dialogCancelBtn');
-
-function showCustomDialog(title, message, isQuestion = false) {
-    return new Promise((resolve) => {
-        if (!customDialog) {
-            console.error("Custom Dialog element not found!");
-            resolve(false);
-            return;
-        }
-
-        if (dialogTitle) dialogTitle.textContent = title;
-        if (dialogMessage) dialogMessage.textContent = message;
-
-        if (dialogConfirmBtn) {
-            dialogConfirmBtn.textContent = 'Confirm';
-        }
-        if (dialogCancelBtn) {
-            dialogCancelBtn.textContent = 'Cancel';
-        }
-
-        try {
-            if (typeof t === 'function') {
-                if (dialogConfirmBtn) dialogConfirmBtn.textContent = isQuestion ? (t('btn_confirm') || 'Confirm') : (t('btn_ok') || 'OK');
-                if (dialogCancelBtn) dialogCancelBtn.textContent = t('btn_cancel') || 'Cancel';
-            }
-        } catch (e) {
-            console.error("Translation error in dialog:", e);
-        }
-
-        // Force visibility reset
-        // FIX: Z-Index 99999 para garantir que fique acima de tudo
-        customDialog.style.cssText = 'display: flex !important; opacity: 1 !important; z-index: 99999 !important; visibility: visible !important;';
-        customDialog.classList.add('active');
-
-        if (isQuestion) {
-            if (dialogCancelBtn) dialogCancelBtn.style.display = 'block';
-        } else {
-            if (dialogCancelBtn) dialogCancelBtn.style.display = 'none';
-        }
-
-        const close = (result) => {
-            customDialog.classList.remove('active');
-            customDialog.style.opacity = '0';
-            setTimeout(() => {
-                customDialog.style.display = 'none';
-            }, 300);
-
-            if (dialogConfirmBtn) dialogConfirmBtn.onclick = null;
-            if (dialogCancelBtn) dialogCancelBtn.onclick = null;
-            resolve(result);
-        };
-
-        if (dialogConfirmBtn) dialogConfirmBtn.onclick = () => close(true);
-        if (dialogCancelBtn) dialogCancelBtn.onclick = () => close(false);
-    });
-}
-
-window.customAsk = (title, message) => showCustomDialog(title, message, true);
+// customAsk já importado do módulo dialog.js
+window.customAsk = customAsk;
