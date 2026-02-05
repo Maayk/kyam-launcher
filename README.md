@@ -4,7 +4,7 @@ Fork modificado do [Battly4Hytale](https://github.com/1ly4s0/Battly4Hytale) com 
 
 ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-blue) ![Plataforma](https://img.shields.io/badge/Plataforma-Windows-lightgrey) ![Node](https://img.shields.io/badge/Node-20+-green)
 
-![Preview do Launcher](https://i.ibb.co/fVmjDkN6/image.png)
+![Preview do Launcher](https://i.ibb.co/VYxmNfBb/image.png)
 
 ---
 
